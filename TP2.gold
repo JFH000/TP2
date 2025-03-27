@@ -1,0 +1,213 @@
+/*
+ * MAPEO DE SIMBOLOS CON SIGNIFICADOS
+
+CASOS:
+"ST" -> start
+"B" ->  begin
+"G" ->  nombre funcion
+"LP_" ->  left parentesis
+"exp_" ->  expresion
+"cmm_" ->  comma
+"RP_" ->  right parentesis
+"I" ->  if
+"cond" ->  condition
+"Num" ->  numero
+"T_" -> then
+"Asig_" -> cuando se asigna un valor
+"col_" -> colon :
+"eq_" -> equal
+"Call_" -> cuando se llama recursivamente
+"Val_" ->  cuando se una un valor
+"L" ->  else
+"EN" ->  end
+"Err" ->  cuando hay un error
+*
+*
+SIMBOLOS:
+"B" ->  begin
+"g" ->  gcd
+"(" ->  simbolo
+")" ->  simbolo
+"a" ->  var
+"b" ->  var
+"," ->  simbolo
+"I" ->  if
+"T" ->  then
+"=" ->  simbolo
+"1" ->  numero
+"2" ->  numero
+"3" ->  numero
+"4" ->  numero
+"5" ->  numero
+"6" ->  numero
+"7" ->  numero
+"8" ->  numero
+"9" ->  numero
+"0" ->  numero
+":" ->  simbolo
+"+" ->  simbolo
+"-" ->  simbolo
+"*" ->  simbolo
+"/" ->  simbolo
+"%" ->  simbolo
+"E" ->  end ó else
+ */
+
+using gold.structures.automaton.*
+using gold.visualization.automaton.*
+
+procedure main(args:String[]) begin
+	Q := {"ST","B","G","LP1","exp1","cmm1","RP1","I","cond","Num","T1","T2","Asig2","col2","eq2",
+	"Call2","LP2","exp2","exp3","cmm2","RP2","Val2","L","Asig3","col3","eq3","Call3","LP3",
+	"Val3","RP3","exp4","exp5","cmm3","EN","Err"}
+	Σ := {'B','g','(',')','a','b',',','I','T','=','1','2','3','4','5','6','7','8','9','0',':','+',
+	'-','*','/','%','E'}
+	q := "ST"
+	F := {"EN","Err"}
+	A : GDeterministicAutomaton := GDeterministicAutomaton(Q, Σ, q, F, δ)
+	GAutomataFrame.show(A)
+end
+
+function δ(q, σ) begin
+	if q=="ST" && σ=='B' then
+		return "B"
+		
+	elseif q=="B" && σ=='g' then
+		return "G"
+		
+	elseif q=="G" && σ=='(' then
+		return "LP1"
+		
+	elseif q=="LP1" && (σ=='a' || σ=='b') then
+		return "exp1"
+	elseif q=="LP1" && σ==')' then
+		return "RP1"
+		
+	elseif q=="exp1" && σ==',' then
+		return "cmm1"
+	elseif q=="exp1" && σ==')' then
+		return "RP1"
+		
+	elseif q=="cmm1" && (σ=='a' || σ=='b') then
+		return "exp1"
+		
+	elseif q=="RP1" && σ=='I' then
+		return "I"
+	elseif q=="RP1" && σ=='E' then
+		return "EN"
+		
+	elseif q=="I" && (σ=='a' || σ=='b' || σ=='1' || σ=='2' || σ=='3' || σ=='4' || σ=='5' || σ=='6' || σ=='7'
+		|| σ=='8' || σ=='9' || σ=='0') then
+		return "cond"
+		
+	elseif q=="cond" && σ=='=' then
+		return "Num"
+		
+	elseif q=="Num" && (σ=='a' || σ=='b' || σ=='1' || σ=='2' || σ=='3' || σ=='4' || σ=='5' || σ=='6' || σ=='7'
+		|| σ=='8' || σ=='9' || σ=='0') then
+		return "T1"
+	
+	elseif q=="T1" && σ=='T' then
+		return "T2"
+		
+	elseif q=="T2" && σ=='g' then
+		return "Asig2"
+		
+	elseif q=="Asig2" && σ==':' then
+		return "col2"
+		
+	elseif q=="col2" && σ=='=' then
+		return "eq2"
+		
+	elseif q=="eq2" && σ=='g' then
+		return "Call2"
+	elseif q=="eq2" && (σ=='a' || σ=='b' || σ=='1' || σ=='2' || σ=='3' || σ=='4' || σ=='5' || σ=='6' || σ=='7'
+		|| σ=='8' || σ=='9' || σ=='0') then
+		return "Val2"
+		
+	elseif q=="Call2" && σ=='(' then
+		return "LP2"
+		
+	elseif q=="LP2" && σ==')' then
+		return "RP2"
+	elseif q=="LP2" && (σ=='a' || σ=='b' || σ=='1' || σ=='2' || σ=='3' || σ=='4' || σ=='5' || σ=='6' || σ=='7'
+		|| σ=='8' || σ=='9' || σ=='0') then
+		return "exp2"
+		
+	elseif q=="exp2" && (σ=='+' || σ=='-' || σ=='*' || σ=='/' || σ=='%') then
+		return "exp3"
+	elseif q=="exp2" && σ==',' then
+		return "cmm2"
+	elseif q=="exp2" && σ==')' then
+		return "RP2"
+		
+	elseif q=="exp3" && (σ=='a' || σ=='b' || σ=='1' || σ=='2' || σ=='3' || σ=='4' || σ=='5' || σ=='6' || σ=='7'
+		|| σ=='8' || σ=='9' || σ=='0') then
+		return "exp2"
+		
+	elseif q=="cmm2" && (σ=='a' || σ=='b' || σ=='1' || σ=='2' || σ=='3' || σ=='4' || σ=='5' || σ=='6' || σ=='7'
+		|| σ=='8' || σ=='9' || σ=='0') then
+		return "exp2"
+		
+	elseif q=="RP2" && σ=='E' then
+		return "L"
+		
+	elseif q=="Val2" && σ=='E' then
+		return "L"
+		
+	elseif q=="L" && σ=='g' then
+		return "Asig3"
+		
+	elseif q=="Asig3" && σ==':' then
+		return "col3"
+		
+	elseif q=="col3" && σ=='=' then
+		return "eq3"
+		
+	elseif q=="eq3" && σ=='g' then
+		return "Call3"
+	elseif q=="eq3" && (σ=='a' || σ=='b' || σ=='1' || σ=='2' || σ=='3' || σ=='4' || σ=='5' || σ=='6' || σ=='7'
+		|| σ=='8' || σ=='9' || σ=='0') then
+		return "Val3"
+		
+	elseif q=="Val3" && σ==')' then
+		return "RP3"
+	
+	elseif q=="Call3" && σ=='(' then
+		return "LP3"
+		
+	elseif q=="LP3" && (σ=='a' || σ=='b' || σ=='1' || σ=='2' || σ=='3' || σ=='4' || σ=='5' || σ=='6' || σ=='7'
+		|| σ=='8' || σ=='9' || σ=='0') then
+		return "exp4"
+		
+	elseif q=="exp4" && (σ=='+' || σ=='-' || σ=='*' || σ=='/' || σ=='%') then
+		return "exp5"
+	elseif q=="exp4" && σ==',' then
+		return "cmm3"
+	elseif q=="exp4" && σ==')' then
+		return "RP3"
+		
+	elseif q=="exp5" && (σ=='a' || σ=='b' || σ=='1' || σ=='2' || σ=='3' || σ=='4' || σ=='5' || σ=='6' || σ=='7'
+		|| σ=='8' || σ=='9' || σ=='0') then
+		return "exp4"
+		
+	elseif q=="cmm3" && (σ=='a' || σ=='b' || σ=='1' || σ=='2' || σ=='3' || σ=='4' || σ=='5' || σ=='6' || σ=='7'
+		|| σ=='8' || σ=='9' || σ=='0') then
+		return "exp4"
+		
+	elseif q=="RP3" && σ=='E' then
+		return "EN"
+	elseif q=="RP3" && σ=='I' then
+		return "I"
+		
+	elseif q=="EN" && σ=='B' then
+		return "B"
+	
+	
+
+	else
+		return "Err"
+	end
+end
+
+
